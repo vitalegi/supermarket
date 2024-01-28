@@ -10,6 +10,7 @@
     @request="onRequest"
     :loading="loading"
     :grid="true"
+    class="col-12"
   >
     <template v-slot:top>
       <div class="row q-pa-md q-gutter-sm col">
@@ -49,7 +50,7 @@
     <template v-slot:item="props">
       <div class="q-pa-xs col-xs-12 col-sm-12 col-md-6 col-xl-3">
         <q-card bordered flat>
-          <q-card-section horizontal>
+          <q-card-section horizontal style="min-height: 130px">
             <q-img
               width="70px"
               :src="props.row.image"
