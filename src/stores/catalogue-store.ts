@@ -29,8 +29,8 @@ function sort(
   return compare(sortBy, a, b);
 }
 
-function matchSearch(a: Product, search: string) {
-  if (search === '') {
+function matchSearch(a: Product, search: string | null) {
+  if (search === '' || search === null) {
     return true;
   }
   const name = (a.name + ' ' + a.brand).toLowerCase();
@@ -70,7 +70,7 @@ export const useCatalogueStore = defineStore('catalogue', {
         pageSize: number,
         sortBy: string,
         descending: boolean,
-        search: string,
+        search: string | null,
         favorites: boolean
       ) => {
         console.log(
