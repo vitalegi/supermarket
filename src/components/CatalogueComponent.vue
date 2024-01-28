@@ -1,6 +1,5 @@
 <template>
   <q-table
-    title="Unes"
     :rows="products"
     :columns="columns"
     row-key="CODE"
@@ -12,16 +11,15 @@
     :loading="loading"
     :grid="$q.screen.xs"
   >
-    <template v-slot:top-right>
-      <div class="row q-gutter-md">
-        <q-input
-          outlined
-          v-model="searchParams.name"
-          label="Search"
-          debounce="100"
-          clearable
-        />
-      </div>
+    <template v-slot:top>
+      <q-input
+        outlined
+        v-model="searchParams.name"
+        label="Search"
+        debounce="100"
+        clearable
+        class="col"
+      />
     </template>
     <template v-slot:body-cell-CODE="props">
       <q-td :props="props">
