@@ -14,7 +14,13 @@
   >
     <template v-slot:top-right>
       <div class="row q-gutter-md">
-        <q-input outlined v-model="searchParams.name" label="Search" />
+        <q-input
+          outlined
+          v-model="searchParams.name"
+          label="Search"
+          debounce="100"
+          clearable
+        />
       </div>
     </template>
     <template v-slot:body-cell-CODE="props">
@@ -29,6 +35,40 @@
           </a>
         </div>
       </q-td>
+    </template>
+    <template v-slot:item="props">
+      <div class="q-pa-xs col-12">
+        <q-card bordered flat>
+          <q-card-section horizontal>
+            <q-card-section class="col">
+              <div class="text-subtitle2">
+                {{ props.row.name }}
+              </div>
+              <div>
+                {{ props.row.brand }}
+              </div>
+              <div>
+                {{ props.row.price }}€ ({{
+                  props.row.pricePerUnitValue
+                }}€/unità)
+              </div>
+            </q-card-section>
+
+            <q-separator vertical />
+
+            <q-card-actions class="justify-end">
+              <q-btn
+                flat
+                round
+                color="red"
+                icon="shopping_cart"
+                :href="props.row.link"
+                target="_blank"
+              />
+            </q-card-actions>
+          </q-card-section>
+        </q-card>
+      </div>
     </template>
   </q-table>
 </template>
@@ -91,7 +131,7 @@ const columns = [
 
 const pagination = ref<Pagination>({
   sortBy: 'NAME',
-  descending: true,
+  descending: false,
   page: 1,
   rowsPerPage: 10,
   rowsNumber: 0,
