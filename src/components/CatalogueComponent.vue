@@ -9,7 +9,7 @@
     :rows-per-page-options="[5, 10, 20, 50, 75, 100]"
     @request="onRequest"
     :loading="loading"
-    :grid="$q.screen.xs"
+    :grid="true"
   >
     <template v-slot:top>
       <q-input
@@ -35,7 +35,7 @@
       </q-td>
     </template>
     <template v-slot:item="props">
-      <div class="q-pa-xs col-12">
+      <div class="q-pa-xs col-xs-12 col-sm-12 col-md-6 col-xl-3">
         <q-card bordered flat>
           <q-card-section horizontal>
             <q-img
