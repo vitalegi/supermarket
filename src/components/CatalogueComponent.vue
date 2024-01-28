@@ -38,6 +38,11 @@
       <div class="q-pa-xs col-12">
         <q-card bordered flat>
           <q-card-section horizontal>
+            <q-img
+              width="70px"
+              :src="props.row.image"
+              referrerpolicy="no-referrer"
+            ></q-img>
             <q-card-section class="col">
               <div class="text-subtitle2">
                 {{ props.row.name }}
