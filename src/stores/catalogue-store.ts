@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { Product } from 'src/components/models';
+import { useFavoriteProductStore } from './favorite-product-store';
 
 function compare(sortBy: string, a: Product, b: Product): number {
   switch (sortBy) {
@@ -28,7 +29,7 @@ function sort(
   return compare(sortBy, a, b);
 }
 
-function match(a: Product, search: string) {
+function matchSearch(a: Product, search: string) {
   if (search === '') {
     return true;
   }
@@ -43,6 +44,15 @@ function match(a: Product, search: string) {
     }
   }
   return true;
+}
+
+function matchFavorites(products: Product[], favorites: boolean): Product[] {
+  if (!favorites) {
+    return products;
+  }
+  const favoriteProductStore = useFavoriteProductStore();
+  const favs = favoriteProductStore.getAll;
+  return products.filter((p) => favs.indexOf(p.code) !== -1);
 }
 
 export const useCatalogueStore = defineStore('catalogue', {
@@ -60,20 +70,31 @@ export const useCatalogueStore = defineStore('catalogue', {
         pageSize: number,
         sortBy: string,
         descending: boolean,
-        search: string
+        search: string,
+        favorites: boolean
       ) => {
-        console.log('search ', page, pageSize, sortBy, descending, search);
-        //const filtered = [...state.products];
-        const filtered = state.products.filter((p) => match(p, search));
-        filtered.sort((a, b) => sort(sortBy, descending, a, b));
+        console.log(
+          'search ',
+          page,
+          pageSize,
+          sortBy,
+          descending,
+          search,
+          favorites
+        );
+        const filtered = state.products.filter((p) => matchSearch(p, search));
+        const filtered2 = matchFavorites(filtered, favorites);
+        filtered2.sort((a, b) => sort(sortBy, descending, a, b));
 
-        const subset = filtered.slice(page * pageSize, (page + 1) * pageSize);
+        const subset = filtered2.slice(page * pageSize, (page + 1) * pageSize);
         return subset;
       };
     },
     size: (state) => {
-      return (search: string) => {
-        return state.products.filter((p) => match(p, search)).length;
+      return (search: string, favorites: boolean) => {
+        const filtered = state.products.filter((p) => matchSearch(p, search));
+        const filtered2 = matchFavorites(filtered, favorites);
+        return filtered2.length;
       };
     },
   },

@@ -12,14 +12,26 @@
     :grid="true"
   >
     <template v-slot:top>
-      <q-input
-        outlined
-        v-model="searchParams.name"
-        label="Search"
-        debounce="100"
-        clearable
-        class="col"
-      />
+      <div class="row q-pa-md q-gutter-sm col">
+        <div>
+          <q-btn
+            round
+            text-color="red"
+            outline
+            :icon="searchParams.favorites ? 'favorite' : 'favorite_border'"
+            v-model="searchParams.favorites"
+            @click="searchParams.favorites = !searchParams.favorites"
+          />
+        </div>
+        <q-input
+          outlined
+          v-model="searchParams.search"
+          label="Search"
+          debounce="100"
+          class="col"
+          clearable
+        />
+      </div>
     </template>
     <template v-slot:body-cell-CODE="props">
       <q-td :props="props">
@@ -59,15 +71,16 @@
 
             <q-separator vertical />
 
-            <q-card-actions class="justify-end">
+            <q-card-actions vertical class="justify-center">
               <q-btn
                 flat
                 round
-                color="red"
+                color="primary"
                 icon="shopping_cart"
                 :href="props.row.link"
                 target="_blank"
               />
+              <product-favorite-component :code="props.row.code" />
             </q-card-actions>
           </q-card-section>
         </q-card>
@@ -80,6 +93,7 @@
 import { onMounted, ref } from 'vue';
 import { Product } from './models';
 import { useCatalogueStore } from 'src/stores/catalogue-store';
+import ProductFavoriteComponent from './ProductFavoriteComponent.vue';
 
 type Pagination = {
   sortBy: string;
@@ -90,7 +104,8 @@ type Pagination = {
 };
 
 type TableFilter = {
-  name?: string;
+  search: string;
+  favorites: boolean;
 };
 
 const store = useCatalogueStore();
@@ -140,13 +155,15 @@ const pagination = ref<Pagination>({
   rowsNumber: 0,
 });
 
-const searchParams = ref<TableFilter>({});
+const searchParams = ref<TableFilter>({
+  search: '',
+  favorites: false,
+});
 
 async function update(
   querySearchParams: TableFilter,
   queryPagination: Pagination
 ) {
-  const search = querySearchParams.name ? querySearchParams.name : '';
   const descending =
     queryPagination.descending !== undefined
       ? queryPagination.descending
@@ -156,10 +173,14 @@ async function update(
     queryPagination.rowsPerPage,
     queryPagination.sortBy,
     descending,
-    search
+    querySearchParams.search,
+    querySearchParams.favorites
   );
   products.value.splice(0, products.value.length, ...res);
-  pagination.value.rowsNumber = store.size(search);
+  pagination.value.rowsNumber = store.size(
+    querySearchParams.search,
+    querySearchParams.favorites
+  );
   pagination.value.descending = queryPagination.descending;
   pagination.value.page = queryPagination.page;
   pagination.value.rowsPerPage = queryPagination.rowsPerPage;
